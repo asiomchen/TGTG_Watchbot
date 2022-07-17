@@ -9,7 +9,7 @@ from typing import Union
 # For remote deployment, the credentials are stored as environment variables in Heroku
 # Try to load the credentials remotely first. If this false, look for a local file
 # Try to first load credentials from environment
-credentials_remote_loaded = False
+credentials_remote_loaded = True
 
 try:
     # Credential handling heroku
@@ -60,7 +60,8 @@ favourites_in_stock = list()
 
 def get_credentials(email: str, to_json: bool = True) -> Union[dict, None]:
     """
-    Helper function: Get the credentials for a specific account
+    Helper function: Get the credentials for a specific email address
+    Returns json file with access_token, refresh_token and user_id which are used to build the tgtg client
     You should run this function only once, then you can build client from the credentials.json file
     """
     # Get the credentials from the tgtg API
@@ -90,6 +91,7 @@ def telegram_bot_sendtext(bot_message, only_to_admin=False):
         # ChadID1 is the admin
         chatIDlist = [telegram["bot_chatID1"]]
     else:
+        # ChatID2 is the group chat id, where the bot is sent to
         chatIDlist = [telegram["bot_chatID1"], telegram["bot_chatID2"]]
 
     for id in chatIDlist:
@@ -201,12 +203,12 @@ def still_alive():
 
     telegram_bot_sendtext(message, only_to_admin = True)
 
-# Use schedule to set up a recurrent checking
-schedule.every(3).minutes.do(routine_check)
+# Use schedule to set up a recurrent checking every minute
+schedule.every(1).minutes.do(routine_check)
 schedule.every(24).hours.do(still_alive)
 
 # Description of the sercive, that gets send once
-telegram_bot_sendtext("The bot script has started successfully. The bot checks every 3 minutes, if there is something new at TooGoodToGo. Every 24 hours, the bots sends a 'still alive'-message.", only_to_admin=True)
+telegram_bot_sendtext("The bot script has started successfully. The bot checks every 1 minute, if there is something new at TooGoodToGo. Every 24 hours, the bots sends a 'still alive'-message.", only_to_admin=True)
 
 while True:
     # run_pending
