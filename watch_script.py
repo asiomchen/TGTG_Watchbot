@@ -5,24 +5,24 @@ import schedule
 import time
 import os
 from typing import Union
-
-# For remote deployment, the credentials are stored as environment variables in Heroku
+from helper import get_credentials
+# For remote deployment, the credentials are stored as environment variables in railway.app
 # Try to load the credentials remotely first. If this false, look for a local file
 # Try to first load credentials from environment
 credentials_remote_loaded = True
 
 try:
     # Credential handling heroku
-    credentials = dict()
+    credentials = get_credentials(email=os.environ['TGTG_EMAIL'], to_json=False)
     # You can generate credentials by running get_credentials() function
-    credentials['access_token'] = os.environ['TGTG_ACCESS_TOKEN']
-    print(f"tgtg_access_token: {credentials['access_token']}")
-    credentials['refresh_token'] = os.environ['TGTG_REFRESH_TOKEN']
-    print(f"tgtg_refresh_token: {credentials['refresh_token']}")
-    credentials['user_id'] = os.environ['TGTG_USER_ID']
-    print(f"tgtg_user_id: {credentials['user_id']}")
-    credentials['cookie'] = os.environ['TGTG_COOKIE']
-    print(f"tgtg_cookie: {credentials['cookie']}")
+    # credentials['access_token'] = os.environ['TGTG_ACCESS_TOKEN']
+    # print(f"tgtg_access_token: {credentials['access_token']}")
+    # credentials['refresh_token'] = os.environ['TGTG_REFRESH_TOKEN']
+    # print(f"tgtg_refresh_token: {credentials['refresh_token']}")
+    # credentials['user_id'] = os.environ['TGTG_USER_ID']
+    # print(f"tgtg_user_id: {credentials['user_id']}")
+    # credentials['cookie'] = os.environ['TGTG_COOKIE']
+    # print(f"tgtg_cookie: {credentials['cookie']}")
 
     telegram = dict()
     telegram['bot_chatID1'] = os.environ['TELEGRAM_BOT_CHATID1']
