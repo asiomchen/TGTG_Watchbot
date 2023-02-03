@@ -21,6 +21,8 @@ try:
     print(f"tgtg_refresh_token: {credentials['refresh_token']}")
     credentials['user_id'] = os.environ['TGTG_USER_ID']
     print(f"tgtg_user_id: {credentials['user_id']}")
+    credentials['cookie'] = os.environ['TGTG_COOKIE']
+    print(f"tgtg_cookie: {credentials['cookie']}")
 
     telegram = dict()
     telegram['bot_chatID1'] = os.environ['TELEGRAM_BOT_CHATID1']
@@ -52,31 +54,14 @@ if credentials_remote_loaded == False:
 # Create the tgtg client with my credentials (you should generate your own credentials using get_credentials()
 client = TgtgClient(access_token=credentials['access_token'],
                     refresh_token=credentials['refresh_token'],
-                    user_id=credentials['user_id'])
+                    user_id=credentials['user_id'],
+                    cookie=credentials['cookie'])
 
 # Init the favourites in stock list as a global variable
 favourites_in_stock = list()
 
 
-def get_credentials(email: str, to_json: bool = True) -> Union[dict, None]:
-    """
-    Helper function: Get the credentials for a specific email address
-    Returns json file with access_token, refresh_token and user_id which are used to build the tgtg client
-    You should run this function only once, then you can build client from the credentials.json file
-    """
-    # Get the credentials from the tgtg API
-    client = TgtgClient(email=email)
-    print('Getting credentials...')
-    print('You should receive an email from tgtg. Please validate the login by clicking the link inside the email.')
-    credentials = client.get_credentials()
-    if to_json:
-        # Save the credentials to a json file
-        f = open('credentials.json', 'w')
-        dump(credentials, f)
-        f.close()
-        print('Credentials saved to credentials.json')
-    else:
-        return credentials
+
 
 
 
