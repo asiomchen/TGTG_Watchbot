@@ -1,5 +1,5 @@
 services:
-  tgtg-watch:
+  bot:
     build: .
     env_file: .env
     deploy:
