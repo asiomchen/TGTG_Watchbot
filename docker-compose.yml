@@ -1,0 +1,4 @@
+services:
+  tgtg-watch:
+    build: .
+    env_file: .env

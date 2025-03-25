@@ -4,67 +4,22 @@ import requests
 import schedule
 import time
 import os
-from typing import Union
-
-# For remote deployment, the credentials are stored as environment variables in railway.app
-# Try to load the credentials remotely first. If this false, look for a local file
-# Try to first load credentials from environment
-credentials_remote_loaded = True
-
-try:
-    # Credential handling railway.app
-    print("Trying to load credentials from railway.app TGTG_email environment variable")
-    # wait for get_credentials to finish
-    credentials = dict()
-    # You can generate credentials by running get_credentials() function
-    credentials['access_token'] = os.environ['TGTG_ACCESS_TOKEN']
-    print(f"tgtg_access_token: {credentials['access_token']}")
-    credentials['refresh_token'] = os.environ['TGTG_REFRESH_TOKEN']
-    print(f"tgtg_refresh_token: {credentials['refresh_token']}")
-    credentials['user_id'] = os.environ['TGTG_USER_ID']
-    print(f"tgtg_user_id: {credentials['user_id']}")
-    credentials['cookie'] = os.environ['TGTG_COOKIE']
-    print(f"tgtg_cookie: {credentials['cookie']}")
-
-    telegram = dict()
-    telegram['bot_chatID1'] = os.environ['TELEGRAM_BOT_CHATID1']
-    print(f"TELEGRAM_BOT_CHATID1: {telegram['bot_chatID1']}")
-    telegram['bot_chatID2'] = os.environ['TELEGRAM_BOT_CHATID2']
-    print(f"TELEGRAM_BOT_CHATID2: {telegram['bot_chatID2']}")
-    telegram['bot_token'] = os.environ['TELEGRAM_BOT_TOKEN']
-    print(f"TELEGRAM_BOT_TOKEN: {telegram['bot_token']}")
-
-    credentials_remote_loaded = True
-except:
-    print("No credentials found in railway.app environment")
-
-if credentials_remote_loaded == False:
-    try:
-        # Credential handling local version
-        # Load tgtg account credentials from a hidden file
-        f = open('telegram.json',)
-        telegram = load(f)
-        f.close()
-
-        # Load tgtg account credentials from a hidden file
-        f = open('credentials.json',)
-        credentials = load(f)
-        f.close()
-    except:
-        print("No files found for local credentials.")
+import dotenv
+dotenv.load_dotenv()
 
 # Create the tgtg client with my credentials (you should generate your own credentials using get_credentials()
-client = TgtgClient(access_token=credentials['access_token'],
-                    refresh_token=credentials['refresh_token'],
-                    user_id=credentials['user_id'],
-                    cookie=credentials['cookie'])
+client = TgtgClient(access_token=os.environ.get("TGTG_ACCESS_TOKEN"),
+                    refresh_token=os.environ.get("TGTG_REFRESH_TOKEN"),
+                    cookie=os.environ.get("TGTG_COOKIE"))
+telegram = {
+    "bot_token": os.environ.get("TELEGRAM_BOT_TOKEN"),
+    "bot_chatID1": os.environ.get("TELEGRAM_BOT_CHATID1"),
+    "bot_chatID2": os.environ.get("TELEGRAM_BOT_CHATID2")
+    }
+
 
 # Init the favourites in stock list as a global variable
-favourites_in_stock = list()
-
-
-
-
+favourites_in_stock = []
 
 
 def telegram_bot_sendtext(bot_message, only_to_admin=False):
