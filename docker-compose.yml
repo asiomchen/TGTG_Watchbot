@@ -3,3 +3,4 @@ services:
     build: .
     env_file: .env
     restart: on-failure:3
+  

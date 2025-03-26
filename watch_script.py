@@ -1,11 +1,14 @@
 from tgtg import TgtgClient
-from json import load, dump
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.cron import CronTrigger
 import requests
-import schedule
 import time
 import os
 import dotenv
+from loguru import logger
 dotenv.load_dotenv()
+
+scheduler = BlockingScheduler()
 
 # Create the tgtg client with my credentials (you should generate your own credentials using get_credentials()
 client = TgtgClient(access_token=os.environ.get("TGTG_ACCESS_TOKEN"),
@@ -95,9 +98,9 @@ def routine_check():
     for item_id in list_of_item_ids:
         try:
             old_stock = [item['items_available'] for item in favourites_in_stock if item['item_id'] == item_id][0]
-        except:
+        except Exception:
             old_stock = 0
-            print("An exception occurred: The item_id was not known as a favorite before")
+            logger.error("An exception occurred: The item_id was not known as a favorite before")
 
         new_stock = [item['items_available'] for item in new_api_result if item['item_id'] == item_id][0]
 
@@ -126,9 +129,9 @@ def routine_check():
     favourites_in_stock = new_api_result
 
     # Print out some maintenance info in the terminal
-    print(f"API run at {time.ctime(time.time())} successful. Current stock:")
+    logger.info(f"API run at {time.ctime(time.time())} successful. Current stock:")
     for item_id in list_of_item_ids:
-        print(f"{[item['store_name'] for item in new_api_result if item['item_id'] == item_id][0]}:\
+        logger.info()(f"{[item['store_name'] for item in new_api_result if item['item_id'] == item_id][0]}:\
          {[item['items_available'] for item in new_api_result if item['item_id'] == item_id][0]}")
 
 def still_alive():
@@ -145,14 +148,9 @@ def still_alive():
 
     telegram_bot_sendtext(message, only_to_admin = True)
 
-# Use schedule to set up a recurrent checking every minute
-schedule.every(1).minutes.do(routine_check)
-schedule.every(24).hours.do(still_alive)
 
-# Description of the sercive, that gets send once
+
+scheduler.add_job(routine_check, CronTrigger(minute='*/1', hour="8-22"))
+scheduler.add_job(still_alive, CronTrigger(hour="8", minute="0"))
 telegram_bot_sendtext("The bot script has started successfully. The bot checks every 1 minute, if there is something new at TooGoodToGo. Every 24 hours, the bots sends a 'still alive'-message.", only_to_admin=True)
-
-while True:
-    # run_pending
-    schedule.run_pending()
-    time.sleep(1)
+scheduler.start()
