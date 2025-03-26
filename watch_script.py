@@ -131,7 +131,7 @@ def routine_check():
     # Print out some maintenance info in the terminal
     logger.info(f"API run at {time.ctime(time.time())} successful. Current stock:")
     for item_id in list_of_item_ids:
-        logger.info()(f"{[item['store_name'] for item in new_api_result if item['item_id'] == item_id][0]}:\
+        logger.info(f"{[item['store_name'] for item in new_api_result if item['item_id'] == item_id][0]}:\
          {[item['items_available'] for item in new_api_result if item['item_id'] == item_id][0]}")
 
 def still_alive():
