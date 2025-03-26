@@ -2,9 +2,4 @@ services:
   bot:
     build: .
     env_file: .env
-    deploy:
-      restart_policy:
-        condition: on-failure
-        delay: 30s
-        max_attempts: 3
-        window: 120s
+    restart: on-failure:3
